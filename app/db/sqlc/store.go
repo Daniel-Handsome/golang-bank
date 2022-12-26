@@ -97,8 +97,8 @@ func (store *Store) TransferTx(ctx context.Context, params TransferTxParams) (Tr
 		// 	return err
 		// }
 
-		// 防止帳戶戶轉 預防race 最好都是取同一個鎖
-		if params.FromAccountID > params.ToAccountID {
+		// 防止帳戶戶轉 預防race 最好都是取同一個鎖 先更新最小id的那個
+		if params.FromAccountID < params.ToAccountID {
 			result.FormAccount, result.ToAccount, err = addAmount(
 				ctx, q, params.FromAccountID, -params.Amount, params.ToAccountID, params.Amount,
 			)
