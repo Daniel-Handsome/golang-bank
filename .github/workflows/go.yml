@@ -38,6 +38,13 @@ jobs:
     - uses: actions/checkout@v3
 
 
+    - name: Install xmllint
+      run: curl -L https://packagecloud.io/golang-migrate/migrate/gpgkey | apt-key add - && 
+              sudo apt-get install -y libxml2-utils &&
+              echo "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/migrate.list &&
+              sudo apt-get update &&
+              sudo apt-get install -y migrate
+
     - name: run migration
       run: cd app && make migrate-up
 
