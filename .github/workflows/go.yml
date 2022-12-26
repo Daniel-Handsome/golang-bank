@@ -39,7 +39,7 @@ jobs:
 
 
     - name: Install xmllint
-      run: curl -L https://packagecloud.io/golang-migrate/migrate/gpgkey | apt-key add - && 
+      run: curl -L https://packagecloud.io/golang-migrate/migrate/gpgkey | apt-key add - | tac | tac | grep -qs foo && 
               sudo apt-get install -y libxml2-utils &&
               echo "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/migrate.list &&
               sudo apt-get update &&
