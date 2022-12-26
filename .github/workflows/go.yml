@@ -39,7 +39,7 @@ jobs:
 
 
     - name: run migration
-      uses: cd app && make migrate-up
+      run: cd app && make migrate-up
 
     - name: Test
       run: cd app && make test
