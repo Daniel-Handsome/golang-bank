@@ -2,10 +2,12 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"testing"
 
+	"github.com/daniel/master-golang/utils"
 	_ "github.com/lib/pq"
 )
 
@@ -14,15 +16,23 @@ var (
 	testDB *sql.DB
 )
 
-const (
-	dbDriver = "postgres"
-	dbDns    = "postgres://daniel:mypassword@localhost:5432/test_db?sslmode=disable"
-)
 
 func TestMain(m *testing.M) {
 	var err error
 
-	testDB, err = sql.Open(dbDriver, dbDns)
+	config, err := utils.LoadConfig("../../.env")
+	if err != nil {
+		log.Fatal(err)
+	}
+	dsn := fmt.Sprintf("postgres://%s:%s@%v:%v/%s?sslmode=disable",
+				config.Username,
+				config.Password,
+				config.Host,
+				config.Port,
+				config.Database,
+	)
+	
+	testDB, err = sql.Open(utils.App.Connection, dsn)
 	if err != nil {
 		log.Fatal(err)
 	}

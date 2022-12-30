@@ -34,7 +34,4 @@ func RandString(n int)  string{
 	return string(str)
 }
 
-func RandCurrency() string {
-	currencies := []string{"USD", "EUR", "GBP"}
-	return currencies[rand.Intn(len(currencies))]
-}
+

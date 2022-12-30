@@ -11,3 +11,8 @@ generateSql:
 ## v verbose log  ./... all package
 test:
 		go test -v -cover ./...
+run :
+		go run main.go
+mockStore:
+		mockgen --build_flags=--mod=mod -package mockdb  -destination db/mock/store.go github.com/daniel/master-golang/db/sqlc Store
+.PHONY: run test generateSql migrate-up migrate-down mockStore

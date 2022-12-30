@@ -80,7 +80,7 @@ func (q *Queries) GeteEtries(ctx context.Context, arg GeteEtriesParams) ([]Entry
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Entry
+	items := []Entry{}
 	for rows.Next() {
 		var i Entry
 		if err := rows.Scan(

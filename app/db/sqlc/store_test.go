@@ -2,64 +2,14 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"math"
-	"reflect"
+
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewStore(t *testing.T) {
-	type args struct {
-		db *sql.DB
-	}
-	tests := []struct {
-		name string
-		args args
-		want *Store
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewStore(tt.args.db); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewStore() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestStore_execTx(t *testing.T) {
-	type fields struct {
-		Queries *Queries
-		db      *sql.DB
-	}
-	type args struct {
-		ctx context.Context
-		fn  func(*Queries) error
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			store := &Store{
-				Queries: tt.fields.Queries,
-				db:      tt.fields.db,
-			}
-			if err := store.execTx(tt.args.ctx, tt.args.fn); (err != nil) != tt.wantErr {
-				t.Errorf("Store.execTx() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
 
 func TestStore_TransferTx(t *testing.T) {
 	store := NewStore(testDB)
