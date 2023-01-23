@@ -2,33 +2,39 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	db "github.com/daniel/master-golang/db/sqlc"
+	"github.com/daniel/master-golang/token"
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 )
 
 
 type createAccountRequest struct {
-	Owner    string `json:"owner" binding:"required"`
+	// Owner    string `json:"owner" binding:"required"`
 	Currency string `json:"currency" binding:"required,oneof=USD EUR"`
 }
 
 func (s *Server) createAccount(ctx *gin.Context) {
+	fmt.Print("test")
 	var req createAccountRequest
     if err := ctx.ShouldBindJSON(&req); err!= nil {
         ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
+
+	payload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	//用db抓 不要s.store 這是給query用
 	arg := db.CreateAccountParams{
-		Owner:    req.Owner,
+		Owner:    payload.UserName,
         Currency: req.Currency,
 		Balance: 0,
 	}
 
 	account, err := s.store.CreateAccount(ctx, arg)
+
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); !ok {
 			switch pqErr.Code.Name() {
@@ -57,6 +63,7 @@ func (s *Server) getAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
 	}
+
 	account, err := s.store.GetAccount(ctx, req.ID)
 	if err != nil {
 		if 	err == sql.ErrNoRows {
@@ -65,6 +72,14 @@ func (s *Server) getAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	payload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	if payload.UserName != account.Owner {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "account doesnot belong to the authenticated user"})
+        return
+    }
+
 
 	ctx.JSON(http.StatusOK, account)
 }
@@ -84,7 +99,9 @@ func (s *Server) getAccounts(ctx *gin.Context) {
         return
 	}
 
+	payload := ctx.MustGet(authorizationPayloadKey).(token.Payload)
 	accounts, err := s.store.GetAccounts(ctx, db.GetAccountsParams{
+		Owner: payload.UserName,
 		Limit: req.PerPage,
 		Offset: (req.Page - 1) * req.PerPage,
 	})

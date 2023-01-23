@@ -9,53 +9,34 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/daniel/master-golang/db/mock"
 	db "github.com/daniel/master-golang/db/sqlc"
+	"github.com/daniel/master-golang/token"
 	"github.com/daniel/master-golang/utils"
-	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
 
-func TestServer_createAccount(t *testing.T) {
-	type fields struct {
-		router *gin.Engine
-		store  db.Store
-	}
-	type args struct {
-		ctx *gin.Context
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &Server{
-				router: tt.fields.router,
-				store:  tt.fields.store,
-			}
-			s.createAccount(tt.args.ctx)
-		})
-	}
-}
 
 func TestServer_getAccount(t *testing.T) {
-	account := randAccount()
+	user, _ := randomUser(t)
+	account := randAccount(user.Name)
 
 	testCases := []struct{
 		name string
 		accountID int64
+		setUpAuth func (t *testing.T, request *http.Request,tokenMaker token.Marker)
 		buildStub func(store *mockdb.MockStore)
 		checkResponse func(t *testing.T, record *httptest.ResponseRecorder)
 	}{
 		{
 			name : "OK",
 			accountID : account.ID,
+			setUpAuth: func(t *testing.T, request *http.Request, tokenMaker token.Marker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, account.Owner, time.Minute)
+			},
 			buildStub : func(store *mockdb.MockStore) {
 				store.EXPECT().
 						GetAccount(gomock.Any(), gomock.Eq(account.ID)).
@@ -70,6 +51,9 @@ func TestServer_getAccount(t *testing.T) {
 		{
 			name : "InvaildID",
 			accountID : 0,
+			setUpAuth: func(t *testing.T, request *http.Request, tokenMaker token.Marker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, account.Owner, time.Minute)
+			},
 			buildStub : func(store *mockdb.MockStore) {
 				store.EXPECT().
 				GetAccount(gomock.Any(), gomock.Any()).
@@ -82,6 +66,9 @@ func TestServer_getAccount(t *testing.T) {
 		{
 			name : "internal error",
 			accountID : account.ID,
+			setUpAuth: func(t *testing.T, request *http.Request, tokenMaker token.Marker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, account.Owner, time.Minute)
+			},
 			buildStub : func(store *mockdb.MockStore) {
 				store.EXPECT().
 				GetAccount(gomock.Any(), gomock.Eq(account.ID)).
@@ -95,6 +82,9 @@ func TestServer_getAccount(t *testing.T) {
 		{
 			name : "Not found",
 			accountID : account.ID,
+			setUpAuth: func(t *testing.T, request *http.Request, tokenMaker token.Marker) {
+				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, account.Owner, time.Minute)
+			},
 			buildStub : func(store *mockdb.MockStore) {
 				store.EXPECT().
 				GetAccount(gomock.Any(), gomock.Eq(account.ID)).
@@ -117,13 +107,17 @@ func TestServer_getAccount(t *testing.T) {
 			testCase.buildStub(store)
 			
 			// start server
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			record := httptest.NewRecorder()
 		
 			url := fmt.Sprintf("/accounts/%d", testCase.accountID)
 			//httptest.NewRequest的第三个参数可以用来传递body数据，必须实现io.Reader接口。
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
+
+			// set header
+			testCase.setUpAuth(t, request, server.tokenMaker)
+
 		
 			server.router.ServeHTTP(record, request)
 			testCase.checkResponse(t, record)
@@ -141,37 +135,11 @@ func responseBodyMatchAccount(t *testing.T, body *bytes.Buffer, account db.Accou
 	require.Equal(t, responseAccount.ID, account.ID)
 }
 
-func randAccount() db.Account {
+func randAccount(name string) db.Account {
 	return db.Account{
         ID:       int64(utils.RandInt(1, 1000)),
-		Owner :  utils.RandOwner(), 
+		Owner :  name, 
 		Balance:  utils.RandBalance(),
 		Currency:    utils.RandCurrency(),
     }
-}
-
-func TestServer_getAccounts(t *testing.T) {
-	type fields struct {
-		router *gin.Engine
-		store  db.Store
-	}
-	type args struct {
-		ctx *gin.Context
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &Server{
-				router: tt.fields.router,
-				store:  tt.fields.store,
-			}
-			s.getAccounts(tt.args.ctx)
-		})
-	}
 }

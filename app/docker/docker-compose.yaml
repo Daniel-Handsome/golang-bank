@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  postgres:
+      build: 
+        context: ./postgresql
+        args:
+          - POSTGRES_VERSION=${POSTGRES_VERSION}
+      volumes:
+        - db-data:/var/lib/postgresql/data
+      ports:
+        - 5432:5432
+      environment:
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        # - PGDATA=/pgdata
+        - POSTGRES_DB=${POSTGRES_DB}
+  api:
+      build:
+        context: ./api
+        args:
+          - GOLANG_VERSION=${GOLANG_VERSION}
+          - APP_CODE_PATH_HOST=${APP_CODE_PATH_HOST}
+      expose:
+        - 8080:8080
+volumes:
+    db-data:

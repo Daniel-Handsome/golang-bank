@@ -24,6 +24,9 @@ func main() {
 	defer db.Close()
 
 	store := sqlc.NewStore(db)
-	router := api.NewServer(store)
+	router, err := api.NewServer(config, store)
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Fatal(router.Run())
 }

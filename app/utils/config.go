@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
@@ -20,6 +21,8 @@ type DB struct {
 	Database string `mapstructure:"DB_DATABASE"`
 	Username string `mapstructure:"DB_USERNAME"`
 	Password string `mapstructure:"DB_PASSWORD"`
+	Token_symmetric_key string `mapstructure:"TOKEN_SYMMETRIC_KEY"`
+	Access_token_duration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 }
 
 func LoadConfig(path string) (config Config,err error) {
