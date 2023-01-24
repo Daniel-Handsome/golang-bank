@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/daniel/master-golang/db/sqlc"
 	mockdb "github.com/daniel/master-golang/db/mock"
+	"github.com/daniel/master-golang/db/sqlc"
 	"github.com/daniel/master-golang/token"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -59,17 +59,16 @@ func TestServer_Transfer(t *testing.T) {
 					Times(1).
 					Return(account2, nil)
 
-				arg := db.CreatetransferParams{
+				arg := db.TransferTxParams{
 					FromAccountID: account1.ID,
 					ToAccountID: account2.ID,
 					Amount: int64(amount),
 				}
 
-				ms.EXPECT().
-					Createtransfer(gomock.Any(), gomock.Eq(arg)).
-					Times(1)
+				ms.EXPECT().TransferTx(gomock.Any(), gomock.Eq(arg)).Times(1)
 			},
 			checkResponse : func(record *httptest.ResponseRecorder) {
+				// fmt.Println(record.Code)
 				require.Equal(t, record.Code, http.StatusOK)
 			},
 		},
@@ -87,13 +86,14 @@ func TestServer_Transfer(t *testing.T) {
 			data, err := json.Marshal(testcase.request)
 			require.NoError(t, err)
 
+			
 			request, err := http.NewRequest(http.MethodPost, "/transfers", bytes.NewReader(data))
 			require.NoError(t, err)
-
+			
 			record := httptest.NewRecorder()
-
+			
+			testcase.setupAuth(t, request, server.tokenMaker)
 			server.router.ServeHTTP(record, request)
 		})
 	}
-
 }
