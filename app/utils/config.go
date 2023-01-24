@@ -27,6 +27,7 @@ type DB struct {
 
 func LoadConfig(path string) (config Config,err error) {
 	viper.SetConfigFile(path)
+	// viper.AddConfigPath(path)
 
 	viper.AutomaticEnv()
 

@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-  postgres:
+  postgre:
       build: 
-        context: ./postgresql
+        context: ./docker/postgresql
         args:
           - POSTGRES_VERSION=${POSTGRES_VERSION}
       volumes:
@@ -15,13 +15,20 @@ services:
         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
         # - PGDATA=/pgdata
         - POSTGRES_DB=${POSTGRES_DB}
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U daniel -d test_db"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
   api:
       build:
-        context: ./api
+        context: .
         args:
           - GOLANG_VERSION=${GOLANG_VERSION}
-          - APP_CODE_PATH_HOST=${APP_CODE_PATH_HOST}
-      expose:
+      ports:
         - 8080:8080
+      depends_on:
+        postgre:
+          condition: service_healthy
 volumes:
     db-data:

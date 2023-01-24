@@ -1,4 +1,5 @@
 ## 注意變數不要跟path重疊
+## localhost是因為github ci 有postgres的container
 POSTGRESQL_URL="postgres://daniel:mypassword@localhost:5432/test_db?sslmode=disable"
 MIGRATION_PATH="db/migrations"
 
