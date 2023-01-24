@@ -1,6 +1,7 @@
 ## 放這裡的原因是 copy只能往下 不能../這樣 所以他一定要再上層
 ################  build stage
-FROM  golang:1.17-alpine3.16 AS Builder
+ARG GOLANG_VERSION
+FROM   golang:${GOLANG_VERSION}-alpine3.16  AS Builder
 
 LABEL maintainer="daniel <adwxsghu@gmail.com>"
 
