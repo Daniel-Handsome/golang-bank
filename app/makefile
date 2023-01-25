@@ -3,6 +3,8 @@
 POSTGRESQL_URL="postgres://daniel:mypassword@localhost:5432/test_db?sslmode=disable"
 MIGRATION_PATH="db/migrations"
 
+AWS_POSTGRESQL_URL="postgres://postgres:X569B210@simple-bank.c3pxclhxzdp0.us-east-1.rds.amazonaws.com/simple_bank"
+
 migrate-up:
 		migrate -path ${MIGRATION_PATH} -database ${POSTGRESQL_URL} up
 migrate-down:
