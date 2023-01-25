@@ -35,7 +35,7 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1
     
     - name: Load secret to save env
-      uses: |
+      run: |
               rm .env
               mv .env.development .env
 
