@@ -40,5 +40,5 @@ jobs:
           REPOSITORY: golang-bank
           IMAGE_TAG: ${{ github.sha }}
       run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG ./app/
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG --build-arg GOLANG_VERSION=1.17 ./app
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
