@@ -36,8 +36,8 @@ jobs:
     
     - name: Load secret to save env
       run: |
-              rm .env
-              mv .env.development .env
+              rm ./app/.env
+              mv ./app/.env.development ./app/.env
 
     - name: Build, tag, and push docker image to Amazon ECR
       env:
