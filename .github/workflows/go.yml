@@ -45,7 +45,8 @@ jobs:
 # https://www.youtube.com/watch?v=rL0aeMutoJ0
     - name: Install migrate
       run: 
-          sudo mv .github/file/migrate.linux-amd64 /user/bin/migrate
+          sudo cp .github/file/migrate.linux-amd64 /user/bin
+          sudo mv /user/bin/migrate.linux-amd64 /user/bin/migrate
           which migrate
     
     
