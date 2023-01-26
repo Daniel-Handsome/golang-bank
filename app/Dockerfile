@@ -25,7 +25,7 @@ WORKDIR /app
 # because builder main -o path is app/main
 COPY --from=Builder /app/main .
 COPY .env .
-COPY start.sh .
+# COPY start.sh .
 
 ### migrate set
 # COPY migrate.linux-amd64  ./migrate
