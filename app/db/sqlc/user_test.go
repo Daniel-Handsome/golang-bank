@@ -40,39 +40,39 @@ func randomCreteUsers(t *testing.T) User {
 	return user
 }
 
-func TestCreateUser(t *testing.T) {
-	type fields struct {
-		db DBTX
-	}
-	type args struct {
-		ctx context.Context
-		arg CreateUserParams
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    User
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			q := &Queries{
-				db: tt.fields.db,
-			}
-			got, err := q.CreateUser(tt.args.ctx, tt.args.arg)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Queries.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Queries.CreateUser() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+// func TestCreateUser(t *testing.T) {
+// 	type fields struct {
+// 		db DBTX
+// 	}
+// 	type args struct {
+// 		ctx context.Context
+// 		arg CreateUserParams
+// 	}
+// 	tests := []struct {
+// 		name    string
+// 		fields  fields
+// 		args    args
+// 		want    User
+// 		wantErr bool
+// 	}{
+// 		// TODO: Add test cases.
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			q := &Queries{
+// 				db: tt.fields.db,
+// 			}
+// 			got, err := q.CreateUser(tt.args.ctx, tt.args.arg)
+// 			if (err != nil) != tt.wantErr {
+// 				t.Errorf("Queries.CreateUser() error = %v, wantErr %v", err, tt.wantErr)
+// 				return
+// 			}
+// 			if !reflect.DeepEqual(got, tt.want) {
+// 				t.Errorf("Queries.CreateUser() = %v, want %v", got, tt.want)
+// 			}
+// 		})
+// 	}
+// }
 
 func TestGetUser(t *testing.T) {
 	user1 := randomCreteUsers(t)
