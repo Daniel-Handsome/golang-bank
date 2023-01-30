@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
     - name: Install kubectl
       uses: azure/setup-kubectl@v3
@@ -48,7 +48,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
       run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest --build-arg GOLANG_VERSION=1.17 ./app
-          docker push --all-tags $REGISTRY/$REPOSITORY:latest
+          docker push -a $REGISTRY/$REPOSITORY
 
     - name: update kubectl config 
       run: aws eks update-kubeconfig --name simple-bank 
