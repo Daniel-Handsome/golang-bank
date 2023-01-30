@@ -17,6 +17,12 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v3
 
+    - name: install 
+      uses: azure/setup-kubectl@v3
+      with:
+        version: '<version>' # default is latest stable
+      id: install
+
     - name: Install kubectl
       uses: azure/setup-kubectl@v1
       with:
@@ -47,5 +53,16 @@ jobs:
           REPOSITORY: golang-bank
           IMAGE_TAG: ${{ github.sha }}
       run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG --build-arg GOLANG_VERSION=1.17 ./app
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:$latest --build-arg GOLANG_VERSION=1.17 ./app
+          docker push -a $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+    - name: update kubectl config
+      run: aws eks update-kubeconfig --name simple-bank 
+    
+    - name: deployment image to eks
+      run: |
+            kubectl apply -f ./app/EKS/aws-auth.yaml
+            kubectl apply -f ./app/EKS/deployment.yaml
+            kubectl apply -f ./app/EKS/service.yaml
+            kubectl apply -f ./app/EKS/issuer.yaml
+            kubectl apply -f ./app/EKS/ingress.yaml
