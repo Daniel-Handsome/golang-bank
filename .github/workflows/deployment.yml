@@ -50,7 +50,7 @@ jobs:
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:latest --build-arg GOLANG_VERSION=1.17 ./app
           docker push -a $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-    - name: update kubectl config
+    - name: update kubectl config 
       run: aws eks update-kubeconfig --name simple-bank 
     
     - name: deployment image to eks
