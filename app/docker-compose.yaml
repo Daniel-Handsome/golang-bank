@@ -26,21 +26,21 @@ services:
         args:
           - GOLANG_VERSION=${GOLANG_VERSION}
       ports:
+        - 8081:8080
+      depends_on:
+        postgre:
+          condition: service_healthy
+  workspace: 
+      build:
+        context: ./docker/workspace
+        args:
+          - GOLANG_VERSION=${GOLANG_VERSION}
+      volumes:
+        - ./:/app
+      ports:
         - 8080:8080
       depends_on:
         postgre:
           condition: service_healthy
-  # workspace: 
-  #     build:
-  #       context: ./docker/workspace
-  #       args:
-  #         - GOLANG_VERSION=${GOLANG_VERSION}
-  #     volumes:
-  #       - ./:/app
-  #     ports:
-  #       - 8080:8080
-  #     depends_on:
-  #       postgre:
-  #         condition: service_healthy
 volumes:
     db-data:

@@ -24,15 +24,17 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	dsn := fmt.Sprintf("postgres://%s:%s@%v:%v/%s?sslmode=disable",
-				config.Username,
-				config.Password,
-				config.Host,
-				config.Port,
-				config.Database,
+
+	dsn := fmt.Sprintf("%s://%s:%s@%v:%v/%s?sslmode=disable",
+		config.Connection,
+		config.Username,
+		config.Password,
+		config.Host,
+		config.Port,
+		config.Database,
 	)
-	
-	testDB, err = sql.Open(utils.App.Connection, dsn)
+
+	testDB, err = sql.Open(config.Connection, dsn)
 	if err != nil {
 		log.Fatal(err)
 	}
