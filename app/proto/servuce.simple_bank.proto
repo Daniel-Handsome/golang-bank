@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package pb;
+
+import "rpc_create_user.proto";
+import "rpc_login_user.proto";
+import "google/api/annotations.proto";
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package =  "github.com/daniel/master-golang/pb";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "simple bank api";
+        version: "1.0";
+        contact: {
+            name: "user transform";
+            url: "https://github.com/Daniel-Handsome/golang-bank";
+            email: "adwxsghu@gmail.com";
+        };
+    };
+};
+
+service SimpleBank {
+    rpc createUser(CreateUserRequest) returns (userReponse) {
+        option (google.api.http) = {
+            post: "/v1/users/create"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            description: "create user and generate token";
+            summary: "create user";
+        };
+    };
+    rpc loginUser(loginUserRequest) returns (loginUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/users/login"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            description: "login user and response";
+            summary: "login by user";
+        };
+    };
+}

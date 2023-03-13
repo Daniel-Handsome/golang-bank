@@ -25,15 +25,16 @@ func NewJwMarkt(secretKey string)  (marker Marker, err error) {
 	return
 }
 
-func (jwtMark *JwtMark) CreateToken(username string, duration time.Duration) (string, error) {
+func (jwtMark *JwtMark) CreateToken(username string, duration time.Duration) (string, *Payload ,error) {
 	paload, err := NewPayload(username, duration)
 	if err != nil {
-		return "", err
+		return "", paload ,err
 	}
 
 	//對稱加密
 	claim := jwt.NewWithClaims(jwt.SigningMethodHS256, paload)
-	return claim.SignedString([]byte(jwtMark.secretKey))
+	token, err := claim.SignedString([]byte(jwtMark.secretKey))
+	return token, paload, err
 }
 
 func (jwtMark *JwtMark) VerifyToken(token  string) (*Payload, error) {

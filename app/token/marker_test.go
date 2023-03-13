@@ -19,7 +19,7 @@ func TestJWTMarker(t *testing.T) {
 	issuedAt := time.Now()
 	expired := issuedAt.Add(duration)
 
-	token, err := jwtMark.CreateToken(username, duration)
+	token, _ , err := jwtMark.CreateToken(username, duration)
 	require.NoError(t, err)
     require.NotEmpty(t, token)
 
@@ -41,7 +41,7 @@ func TestExpiredJWTToken(t *testing.T) {
 	username := utils.RandOwner()
     duration  := -time.Minute
 
-	token, err := jwtMark.CreateToken(username, duration)
+	token, _ ,err := jwtMark.CreateToken(username, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, token)
 

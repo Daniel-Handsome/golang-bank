@@ -188,6 +188,7 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
+
 func randomUser(t *testing.T) (user db.User, password string)  {
 	password = utils.RandString(6)
 	hashPassword, err := utils.HashPassword(password)

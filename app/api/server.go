@@ -51,6 +51,7 @@ func (s *Server) setUpRouter() {
 	{
 		userGroup.POST("", s.createUser)
 		userGroup.POST("/login", s.loginUser)
+		userGroup.POST("/token/renew_access", s.RenewAccessToken)
 	}
 
 	//ath.Join("/", "/") 等於 /

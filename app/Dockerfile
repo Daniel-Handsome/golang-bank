@@ -33,12 +33,14 @@ COPY .env .
 ## 複製外部的進來給他跑migrate 路徑最好一樣
 COPY db/migrations ./db/migrations
 
+
+COPY docs ./docs
+
 ## RUN sh 
 
 ## ENTRYPOINT cme會當變數 ENTRYPOINT
 ## 當然可以放在entrypoint的第二的餐數
 
-ARG POSTGRESQL_URL
 
 EXPOSE 8080
 

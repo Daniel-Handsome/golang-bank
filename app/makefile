@@ -18,4 +18,15 @@ run :
 		go run main.go
 mockStore:
 		mockgen --build_flags=--mod=mod -package mockdb  -destination db/mock/store.go github.com/daniel/master-golang/db/sqlc Store
-.PHONY: run test generateSql migrate-up migrate-down mockStore
+### 安裝3.14 用apt 最不夠版本 裝最新的也會有問題 裝3.14.0剛好
+proto:
+		rm -f ./pb/*.go
+		rm -f ./docs/swagger/*.json
+		protoc --proto_path=proto --go_out=./pb --go_opt=paths=source_relative \
+		--go-grpc_out=./pb --go-grpc_opt=paths=source_relative \
+		--grpc-gateway_out=./pb --grpc-gateway_opt=paths=source_relative \
+		--grpc-gateway_opt logtostderr=true \
+		--openapiv2_out ./docs/swagger --openapiv2_opt=allow_merge=true,merge_file_name=simple_bank \
+		proto/*.proto
+
+.PHONY: run test generateSql migrate-up migrate-down mockStore proto

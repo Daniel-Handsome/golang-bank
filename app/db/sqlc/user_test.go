@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	// "reflect"
 	"testing"
 	"time"
@@ -86,4 +87,41 @@ func TestGetUser(t *testing.T) {
 
 	require.WithinDuration(t, user1.PasswordChangeAt, user2.PasswordChangeAt, time.Second)
 	require.WithinDuration(t, user1.CreateAt, user2.CreateAt, time.Second)
+}
+
+
+func TestUpdateUser(t *testing.T) {
+	user := randomCreteUsers(t)
+
+	testCases := []struct {
+		name string
+		params UpdateUserParams
+		checkResult func(err error, newUser User)
+	}{
+		{
+			name: "onlyFullName",
+			params: UpdateUserParams{
+				Name: user.Name,
+				FullName: sql.NullString{
+					String: utils.RandOwner(),
+					Valid: true,
+				},
+			},
+			checkResult: func(err error, newUser User) {
+				require.NoError(t, err)
+				require.NotEqual(t, newUser.FullName, user.FullName)
+				require.Equal(t, user.Name, newUser.Name)
+				require.Equal(t, user.Email, newUser.Email)
+				require.Equal(t, user.Password, newUser.Password)
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			newUser, err := testQueries.UpdateUser(context.Background(), testCase.params)
+			testCase.checkResult(err, newUser)
+		})
+	}
+
 }

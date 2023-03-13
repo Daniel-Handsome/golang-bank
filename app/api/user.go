@@ -7,6 +7,8 @@ import (
 
 	db "github.com/daniel/master-golang/db/sqlc"
 	"github.com/daniel/master-golang/utils"
+	"github.com/google/uuid"
+
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 )
@@ -81,7 +83,11 @@ type loginUserRequest struct {
 }
 
 type loginUserResponse struct {
+	SessionId uuid.UUID `json:"session_id"`
 	AccessToken string `json:"access_token"`
+	AccessTokenExpiresAt time.Time `json:"access_token_expires_at"`
+	RefreshToken string `json:"refresh_token"`
+	RefreshTokenExpiresAt time.Time `json:"refresh_token_expires_at"`
 	User userResponse `json:"user"`
 }
 
@@ -118,7 +124,7 @@ func (s *Server) loginUser(ctx *gin.Context) {
 	}
 
 	// create token
-	token, err := s.tokenMaker.CreateToken(user.Name, s.config.Access_token_duration)
+	token, payload, err := s.tokenMaker.CreateToken(user.Name, s.config.Access_token_duration)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"err": err.Error(),
@@ -126,9 +132,37 @@ func (s *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
+	// refresh token
+	refreshToken, refreshPayload, err := s.tokenMaker.CreateToken(user.Name, s.config.Access_token_duration)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+
+	session, err := s.store.CreateSession(ctx, db.CreateSessionParams{
+		ID : refreshPayload.ID,
+		Username : user.Name,
+		RefreshToken: refreshToken,
+		UserAgent : ctx.Request.UserAgent(),
+		ClientID : ctx.ClientIP(),
+		Isblacked: false,
+		ExpiresAt: refreshPayload.ExpiredAt,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"err": err.Error(),
+		})
+		return 
+	}
 
 	ctx.JSON(http.StatusOK, loginUserResponse{
+		SessionId : session.ID,
 		AccessToken: token,
+		AccessTokenExpiresAt: payload.ExpiredAt,
+		RefreshToken: refreshToken,
+		RefreshTokenExpiresAt: refreshPayload.ExpiredAt,
 		User: newUserResponse(user),
 	})
 }

@@ -24,6 +24,7 @@ type DB struct {
 	Token_symmetric_key string `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	Access_token_duration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	Refresh_token_duration time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
+	Grpc_port int32 `mapstructure:"GRPC_PORT"`
 }
 
 func LoadConfig(path string) (config Config,err error) {
